@@ -1,20 +1,20 @@
-{ "name": "pimatic-plugin-template",
-  "description": "The plugin description",
-  "author": "Your Name <you@example.com> (http://your-website)",
+{ "name": "pimatic-location",
+  "description": "Pimatic location plugin",
+  "author": "Kevin Schreiber <blackoise@googlemail.com> (http://www.blackoise.de)",
   "main": "my-plugin",
   "files": [
-    "my-plugin.coffee",
+    "pimatic-location.coffee",
     "README.md",
-    "my-plugin-config-schema.coffee"
+    "pimatic-location-config-schema.coffee"
   ],
-  "version": "0.8.0",
-  "homepage": "http://your-plugin-website",
+  "version": "0.0.1",
+  "homepage": "https://github.com/Oitzu/pimatic-location",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git://github.com/pimatic/pimatic-plugin-template.git"
+    "url": "https://github.com/Oitzu/pimatic-location-plugin.git"
   },
-  "configSchema": "my-plugin-config-schema.coffee",
+  "configSchema": "pimatic-location-config-schema.coffee",
   "dependencies": {
   },
   "peerDependencies": {
