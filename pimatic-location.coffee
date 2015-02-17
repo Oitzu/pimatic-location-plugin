@@ -5,11 +5,6 @@ module.exports = (env) ->
   # Require the [cassert library](https://github.com/rhoot/cassert).
   assert = env.require 'cassert'
 
-  # Include you own depencies with nodes global require function:
-  #  
-  #     someThing = require 'someThing'
-  #  
-
   # ###PimaticLocation class
   class PimaticLocation extends env.plugins.Plugin
 
@@ -37,24 +32,70 @@ module.exports = (env) ->
       @id = config.id
       @attributes = {}
 
-      @attributes.linear_distance = {
+      @attributes.LinearDistance = {
         description: "Linear distance between the devices."
         type: "number"
         unit: "m"
       }
   
-      @attributes.route_distance = {
+      @attributes.RouteDistance = {
         description: "Distance between the devices by road."
         type: "number"
         unit: "m"
       }
     
-      @attributes.eta = {
+      @attributes.ETA = {
         description: "Estimated time of arrival."
         type: "number"
         unit: "min."
       }
+      
+      @actions = {}
+      
+      @actions.updateLinearDistance = {
+        descriptions: "Updates the linear distance, called from the Android pimatic-location app"
+        params:
+          distance:
+            type: "number"
+      }
+      
+      @actions.updateRouteDistance = {
+        descriptions: "Updates the route distance, called from the Android pimatic-location app"
+        params:
+          distance:
+            type: "number"
+      }
+      
+      @actions.updateETA = {
+        descriptions: "Updates the ETA, called from the Android pimatic-location app"
+        params:
+          distance:
+            type: "number"
+      }
+      
       super()
+
+    getLinearDistance: -> Promise.resolve(@_LinearDistance)
+    getRouteDistance: -> Promise.resolve(@_RouteDistance)
+    getETA: -> Promise.resolve(@_ETA)
+    
+    updateLinearDistance: (distance) ->
+      @_LinearDistance = distance
+      env.logger.debug("New linear distance " + distance + " from device.")
+      @emit 'LinearDistance', distance
+      return Promise.resolve()
+      
+    updateRouteDistance: (distance) ->
+      @_RouteDistance = distance
+      env.logger.debug("New route distance " + distance + " from device.")
+      @emit 'RouteDistance', distance
+      return Promise.resolve()
+      
+    updateETA: (eta) ->
+      @_ETA = eta
+      env.logger.debug("New eta " + eta + " from device.")
+      @emit 'ETA', eta
+      return Promise.resolve()
     
   # ###Finally
   # Create a instance of my plugin
