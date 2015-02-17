@@ -21,6 +21,8 @@ module.exports = (env) ->
     #     
     # 
     init: (app, @framework, @config) =>
+      deviceConfigDef = require("./device-config-schema")
+      
       @framework.deviceManager.registerDeviceClass("LocationDevice", {
         configDef: deviceConfigDef.LocationDevice,
         createCallback: (config) =>
@@ -31,6 +33,8 @@ module.exports = (env) ->
     
   class LocationDevice extends env.devices.Device
     constructor: (@config) ->
+      @name = config.name
+      @id = config.id
       @attributes = {}
 
       @attributes.linear_distance = {
