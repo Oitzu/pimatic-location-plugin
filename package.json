@@ -5,9 +5,10 @@
   "files": [
     "pimatic-location.coffee",
     "README.md",
-    "pimatic-location-config-schema.coffee"
+    "pimatic-location-config-schema.coffee",
+    "device-config-schema.coffee"
   ],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/Oitzu/pimatic-location",
   "private": true,
   "repository": {
