@@ -5,6 +5,8 @@ module.exports = (env) ->
   # Require the [cassert library](https://github.com/rhoot/cassert).
   assert = env.require 'cassert'
 
+  gmaputil = env.require 'googlemapsutil'
+  
   # ###PimaticLocation class
   class PimaticLocation extends env.plugins.Plugin
 
@@ -27,9 +29,14 @@ module.exports = (env) ->
 
     
   class LocationDevice extends env.devices.Device
+  
+    _this = this
+  
     constructor: (@config) ->
       @name = config.name
       @id = config.id
+      @pimaticLat = config.lat
+      @pimaticLong = config.long
       @attributes = {}
 
       @attributes.LinearDistance = {
@@ -47,10 +54,24 @@ module.exports = (env) ->
       @attributes.ETA = {
         description: "Estimated time of arrival."
         type: "number"
-        unit: "min."
+        unit: "s"
+      }
+      
+      @attributes.Address = {
+        description: "Current Address."
+        type: "string"
       }
       
       @actions = {}
+      
+      @actions.updateLocation = {
+        discriptions: "Updates the location of the Device."
+        params:
+          long:
+            type: "number"
+          lat:
+            type: "number"
+      }
       
       @actions.updateLinearDistance = {
         descriptions: "Updates the linear distance, called from the Android pimatic-location app"
@@ -73,11 +94,47 @@ module.exports = (env) ->
             type: "number"
       }
       
+      _this = this
+      
       super()
 
     getLinearDistance: -> Promise.resolve(@_LinearDistance)
     getRouteDistance: -> Promise.resolve(@_RouteDistance)
     getETA: -> Promise.resolve(@_ETA)
+    getAddress: -> Promise.resolve(@_Address)
+    
+    updateLocationCB: (err, result) ->
+      if err
+        env.logger.error(err)
+      else
+        data = JSON.parse result
+        route_distance = data['routes'][0]['legs'][0]['distance']['value']
+        eta = data['routes'][0]['legs'][0]['duration']['value']
+        address = data['routes'][0]['legs'][0]['start_address']
+
+        @_LinearDistance = 0
+        @_RouteDistance = route_distance
+        @_ETA = eta
+        @_Address = address
+      
+        _this.emit 'LinearDistance', 0
+        _this.emit 'RouteDistance', route_distance
+        _this.emit 'ETA', eta
+        _this.emit 'Address', address
+
+      return Promise.resolve();
+    
+    updateLocation: (long, lat, updateAddress) ->
+      start_loc = {
+        lat: lat
+        lng: long
+      }
+      end_loc = {
+        lat: @pimaticLat
+        lng: @pimaticLong
+      }
+      gmaputil.directions(start_loc, end_loc, null, @updateLocationCB, true)
+      return Promise.resolve()
     
     updateLinearDistance: (distance) ->
       @_LinearDistance = distance

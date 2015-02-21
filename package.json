@@ -8,15 +8,16 @@
     "pimatic-location-config-schema.coffee",
     "device-config-schema.coffee"
   ],
-  "version": "0.0.2",
+  "version": "0.0.4",
   "homepage": "https://github.com/Oitzu/pimatic-location",
-  "private": true,
+  "private": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/Oitzu/pimatic-location-plugin.git"
   },
   "configSchema": "pimatic-location-config-schema.coffee",
   "dependencies": {
+    "googlemapsutil": "0.1.*"
   },
   "peerDependencies": {
     "pimatic": "0.8.*"
