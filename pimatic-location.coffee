@@ -6,6 +6,7 @@ module.exports = (env) ->
   assert = env.require 'cassert'
 
   gmaputil = env.require 'googlemapsutil'
+  geolib = env.require 'geolib'
   
   # ###PimaticLocation class
   class PimaticLocation extends env.plugins.Plugin
@@ -31,7 +32,8 @@ module.exports = (env) ->
   class LocationDevice extends env.devices.Device
   
     _this = this
-  
+    addressUpdate = 0;
+    
     constructor: (@config) ->
       @name = config.name
       @id = config.id
@@ -70,6 +72,8 @@ module.exports = (env) ->
           long:
             type: "number"
           lat:
+            type: "number"
+          updateAddress:
             type: "number"
       }
       
@@ -111,16 +115,18 @@ module.exports = (env) ->
         route_distance = data['routes'][0]['legs'][0]['distance']['value']
         eta = data['routes'][0]['legs'][0]['duration']['value']
         address = data['routes'][0]['legs'][0]['start_address']
-
-        @_LinearDistance = 0
+        
         @_RouteDistance = route_distance
         @_ETA = eta
-        @_Address = address
       
-        _this.emit 'LinearDistance', 0
         _this.emit 'RouteDistance', route_distance
         _this.emit 'ETA', eta
-        _this.emit 'Address', address
+        if addressUpdate is 1
+          @_Address = address
+          _this.emit 'Address', address
+        else
+          @_Address = '-'
+          _this.emit 'Address', '-'
 
       return Promise.resolve();
     
@@ -133,6 +139,14 @@ module.exports = (env) ->
         lat: @pimaticLat
         lng: @pimaticLong
       }
+      addressUpdate = updateAddress
+      
+      env.logger.debug("Received: long="+long+" lat="+lat+" updateAddress="+updateAddress+" from "+@name)
+      
+      linearDistance = geolib.getDistance(start_loc, end_loc)
+     
+      @_LinearDistance = linearDistance;
+      _this.emit 'LinearDistance', linearDistance;
       gmaputil.directions(start_loc, end_loc, null, @updateLocationCB, true)
       return Promise.resolve()
     
