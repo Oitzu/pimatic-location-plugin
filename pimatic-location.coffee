@@ -23,10 +23,8 @@ module.exports = (env) ->
       
       @framework.deviceManager.registerDeviceClass("LocationDevice", {
         configDef: deviceConfigDef.LocationDevice,
-        createCallback: (config) =>
-          device = new LocationDevice(config)
-          return device
-        })
+        createCallback: (config) => new LocationDevice(config)
+      })
 
     
   class LocationDevice extends env.devices.Device
@@ -34,40 +32,26 @@ module.exports = (env) ->
     _this = this
     addressUpdate = 0;
     
-    constructor: (@config) ->
-      @name = config.name
-      @id = config.id
-      @pimaticLat = config.lat
-      @pimaticLong = config.long
-      @attributes = {}
-
-      @attributes.LinearDistance = {
+    attributes:
+      LinearDistance:
         description: "Linear distance between the devices."
         type: "number"
         unit: "m"
-      }
-  
-      @attributes.RouteDistance = {
+      RouteDistance:
         description: "Distance between the devices by road."
         type: "number"
         unit: "m"
-      }
-    
-      @attributes.ETA = {
+      ETA:
         description: "Estimated time of arrival."
         type: "number"
         unit: "s"
-      }
-      
-      @attributes.Address = {
+      Address:
         description: "Current Address."
         type: "string"
-      }
-      
-      @actions = {}
-      
-      @actions.updateLocation = {
-        discriptions: "Updates the location of the Device."
+        
+    actions:
+      updateLocation:
+        description: "Updates the location of the Device."
         params:
           long:
             type: "number"
@@ -75,32 +59,18 @@ module.exports = (env) ->
             type: "number"
           updateAddress:
             type: "number"
-      }
-      
-      @actions.updateLinearDistance = {
-        descriptions: "Updates the linear distance, called from the Android pimatic-location app"
-        params:
-          distance:
-            type: "number"
-      }
-      
-      @actions.updateRouteDistance = {
-        descriptions: "Updates the route distance, called from the Android pimatic-location app"
-        params:
-          distance:
-            type: "number"
-      }
-      
-      @actions.updateETA = {
-        descriptions: "Updates the ETA, called from the Android pimatic-location app"
-        params:
-          distance:
-            type: "number"
-      }
+        
+    constructor: (@config) ->
+      @name = config.name
+      @id = config.id
+      @pimaticLat = config.lat
+      @pimaticLong = config.long
+      @useMaps = config.useGoogleMaps
+      super()
       
       _this = this
       
-      super()
+      
 
     getLinearDistance: -> Promise.resolve(@_LinearDistance)
     getRouteDistance: -> Promise.resolve(@_RouteDistance)
@@ -123,10 +93,10 @@ module.exports = (env) ->
         _this.emit 'ETA', eta
         if addressUpdate is 1
           @_Address = address
-          _this.emit 'Address', address
+          _this.emit 'Address', @_Address
         else
           @_Address = '-'
-          _this.emit 'Address', '-'
+          _this.emit 'Address', @_Address
 
       return Promise.resolve();
     
@@ -145,27 +115,14 @@ module.exports = (env) ->
       
       linearDistance = geolib.getDistance(start_loc, end_loc)
      
-      @_LinearDistance = linearDistance;
-      _this.emit 'LinearDistance', linearDistance;
-      gmaputil.directions(start_loc, end_loc, null, @updateLocationCB, true)
-      return Promise.resolve()
-    
-    updateLinearDistance: (distance) ->
-      @_LinearDistance = distance
-      env.logger.debug("New linear distance " + distance + " from device.")
-      @emit 'LinearDistance', distance
-      return Promise.resolve()
+      @_LinearDistance = linearDistance
+      @emit 'LinearDistance', @_LinearDistance
       
-    updateRouteDistance: (distance) ->
-      @_RouteDistance = distance
-      env.logger.debug("New route distance " + distance + " from device.")
-      @emit 'RouteDistance', distance
-      return Promise.resolve()
-      
-    updateETA: (eta) ->
-      @_ETA = eta
-      env.logger.debug("New eta " + eta + " from device.")
-      @emit 'ETA', eta
+      _this = this
+
+      if @useMaps is true
+        gmaputil.directions(start_loc, end_loc, null, @updateLocationCB, true)
+        
       return Promise.resolve()
     
   # ###Finally
