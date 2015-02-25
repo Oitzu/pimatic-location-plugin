@@ -33,19 +33,19 @@ module.exports = (env) ->
     addressUpdate = 0;
     
     attributes:
-      LinearDistance:
+      linearDistance:
         description: "Linear distance between the devices."
         type: "number"
         unit: "m"
-      RouteDistance:
+      routeDistance:
         description: "Distance between the devices by road."
         type: "number"
         unit: "m"
-      ETA:
+      eta:
         description: "Estimated time of arrival."
         type: "number"
         unit: "s"
-      Address:
+      address:
         description: "Current Address."
         type: "string"
         
@@ -72,32 +72,37 @@ module.exports = (env) ->
       
       
 
-    getLinearDistance: -> Promise.resolve(@_LinearDistance)
-    getRouteDistance: -> Promise.resolve(@_RouteDistance)
-    getETA: -> Promise.resolve(@_ETA)
-    getAddress: -> Promise.resolve(@_Address)
+    getLinearDistance: -> Promise.resolve(@_linearDistance)
+    getRouteDistance: -> Promise.resolve(@_routeDistance)
+    getEta: -> Promise.resolve(@_eta)
+    getAddress: -> Promise.resolve(@_address)
     
     updateLocationCB: (err, result) ->
       if err
         env.logger.error(err)
       else
-        data = JSON.parse result
-        route_distance = data['routes'][0]['legs'][0]['distance']['value']
-        eta = data['routes'][0]['legs'][0]['duration']['value']
-        address = data['routes'][0]['legs'][0]['start_address']
+        try
+          data = JSON.parse result
+          route_distance = data['routes'][0]['legs'][0]['distance']['value']
+          eta = data['routes'][0]['legs'][0]['duration']['value']
+          address = data['routes'][0]['legs'][0]['start_address']
         
-        @_RouteDistance = route_distance
-        @_ETA = eta
+          @_routeDistance = route_distance
+          @_eta = eta
       
-        _this.emit 'RouteDistance', route_distance
-        _this.emit 'ETA', eta
-        if addressUpdate is 1
-          @_Address = address
-          _this.emit 'Address', @_Address
-        else
-          @_Address = '-'
-          _this.emit 'Address', @_Address
-
+          _this.emit 'routeDistance', route_distance
+          _this.emit 'eta', eta
+          if addressUpdate is 1
+            @_address = address
+            _this.emit 'address', @_address
+          else
+            @_address = '-'
+            _this.emit 'address', @_address
+        catch error
+          env.logger.error("Didn't received correct Gmaps-Api response!")
+          env.logger.debug("Gmaps-Api response: "+result)
+          
+          
       return Promise.resolve();
     
     updateLocation: (long, lat, updateAddress) ->
@@ -115,8 +120,8 @@ module.exports = (env) ->
       
       linearDistance = geolib.getDistance(start_loc, end_loc)
      
-      @_LinearDistance = linearDistance
-      @emit 'LinearDistance', @_LinearDistance
+      @_linearDistance = linearDistance
+      @emit 'linearDistance', @_linearDistance
       
       _this = this
 
