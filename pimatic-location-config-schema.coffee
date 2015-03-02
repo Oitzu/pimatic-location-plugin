@@ -1,6 +1,6 @@
 # #pimatic-location plugin configuration options
 module.exports = {
-  title: "my plugin config options"
+  title: "pimatic-location options"
   type: "object"
   properties: {}
 }

@@ -20,7 +20,6 @@ module.exports = (env) ->
     # 
     init: (app, @framework, @config) =>
       deviceConfigDef = require("./device-config-schema")
-      
       @framework.deviceManager.registerDeviceClass("LocationDevice", {
         configDef: deviceConfigDef.LocationDevice,
         createCallback: (config) => new LocationDevice(config)
@@ -66,11 +65,10 @@ module.exports = (env) ->
       @pimaticLat = config.lat
       @pimaticLong = config.long
       @useMaps = config.useGoogleMaps
+      @apiKey = config.googleMapsApiKey
       super()
       
       _this = this
-      
-      
 
     getLinearDistance: -> Promise.resolve(@_linearDistance)
     getRouteDistance: -> Promise.resolve(@_routeDistance)
@@ -126,8 +124,16 @@ module.exports = (env) ->
       _this = this
 
       if @useMaps is true
-        gmaputil.directions(start_loc, end_loc, null, @updateLocationCB, true)
+        options = {}
+        use_ssl = false
+        if @apiKey isnt "0"
+          use_ssl = true
+          options = {
+            key: @apiKey
+          }
         
+        gmaputil.directions(start_loc, end_loc, options, @updateLocationCB, true, use_ssl)
+
       return Promise.resolve()
     
   # ###Finally

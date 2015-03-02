@@ -16,5 +16,9 @@ module.exports = {
         description: "Use the Google Maps API to get Route Informations?"
         type: "boolean"
         default: true
+      googleMapsApiKey:
+        description: "Google Maps Api Key"
+        type: "string"
+        default: "0"
   }
 }
