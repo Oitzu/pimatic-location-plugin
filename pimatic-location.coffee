@@ -28,9 +28,6 @@ module.exports = (env) ->
     
   class LocationDevice extends env.devices.Device
   
-    _this = this
-    addressUpdate = 0;
-    
     attributes:
       linearDistance:
         description: "Linear distance between the devices."
@@ -67,42 +64,12 @@ module.exports = (env) ->
       @useMaps = config.useGoogleMaps
       @apiKey = config.googleMapsApiKey
       super()
-      
-      _this = this
 
     getLinearDistance: -> Promise.resolve(@_linearDistance)
     getRouteDistance: -> Promise.resolve(@_routeDistance)
     getEta: -> Promise.resolve(@_eta)
     getAddress: -> Promise.resolve(@_address)
-    
-    updateLocationCB: (err, result) ->
-      if err
-        env.logger.error(err)
-      else
-        try
-          data = JSON.parse result
-          route_distance = data['routes'][0]['legs'][0]['distance']['value']
-          eta = data['routes'][0]['legs'][0]['duration']['value']
-          address = data['routes'][0]['legs'][0]['start_address']
-        
-          @_routeDistance = route_distance
-          @_eta = eta
-      
-          _this.emit 'routeDistance', route_distance
-          _this.emit 'eta', eta
-          if addressUpdate is 1
-            @_address = address
-            _this.emit 'address', @_address
-          else
-            @_address = '-'
-            _this.emit 'address', @_address
-        catch error
-          env.logger.error("Didn't received correct Gmaps-Api response!")
-          env.logger.debug("Gmaps-Api response: "+result)
-          
-          
-      return Promise.resolve();
-    
+
     updateLocation: (long, lat, updateAddress) ->
       start_loc = {
         lat: lat
@@ -112,16 +79,15 @@ module.exports = (env) ->
         lat: @pimaticLat
         lng: @pimaticLong
       }
-      addressUpdate = updateAddress
       
-      env.logger.debug("Received: long="+long+" lat="+lat+" updateAddress="+updateAddress+" from "+@name)
+      env.logger.debug(
+        "Received: long=#{long} lat=#{lat} updateAddress=#{updateAddress} from #{@name}"
+      )
       
       linearDistance = geolib.getDistance(start_loc, end_loc)
      
       @_linearDistance = linearDistance
       @emit 'linearDistance', @_linearDistance
-      
-      _this = this
 
       if @useMaps is true
         options = {}
@@ -131,6 +97,32 @@ module.exports = (env) ->
           options = {
             key: @apiKey
           }
+
+        updateLocationCB: (err, result) =>
+          if err
+            env.logger.error(err)
+          else
+            try
+              data = JSON.parse result
+              route_distance = data['routes'][0]['legs'][0]['distance']['value']
+              eta = data['routes'][0]['legs'][0]['duration']['value']
+              address = data['routes'][0]['legs'][0]['start_address']
+            
+              @_routeDistance = route_distance
+              @_eta = eta
+          
+              @emit 'routeDistance', route_distance
+              @emit 'eta', eta
+              if updateAddress is 1
+                @_address = address
+                @emit 'address', @_address
+              else
+                @_address = '-'
+                @emit 'address', @_address
+            catch error
+              env.logger.error("Didn't received correct Gmaps-Api response!")
+              env.logger.debug("Gmaps-Api response: "+result)
+          return  
         
         gmaputil.directions(start_loc, end_loc, options, @updateLocationCB, true, use_ssl)
 
