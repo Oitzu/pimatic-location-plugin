@@ -5,8 +5,8 @@ module.exports = (env) ->
   # Require the [cassert library](https://github.com/rhoot/cassert).
   assert = env.require 'cassert'
 
-  gmaputil = env.require 'googlemapsutil'
-  geolib = env.require 'geolib'
+  gmaputil = require 'googlemapsutil'
+  geolib = require 'geolib'
   
   # ###PimaticLocation class
   class PimaticLocation extends env.plugins.Plugin
