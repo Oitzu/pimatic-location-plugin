@@ -98,7 +98,7 @@ module.exports = (env) ->
             key: @apiKey
           }
 
-        updateLocationCB: (err, result) =>
+        updateLocationCB = (err, result) =>
           if err
             env.logger.error(err)
           else
@@ -124,7 +124,7 @@ module.exports = (env) ->
               env.logger.debug("Gmaps-Api response: "+result)
           return  
         
-        gmaputil.directions(start_loc, end_loc, options, @updateLocationCB, true, use_ssl)
+        gmaputil.directions(start_loc, end_loc, options, updateLocationCB, true, use_ssl)
 
       return Promise.resolve()
     
