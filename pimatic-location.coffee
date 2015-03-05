@@ -30,20 +30,28 @@ module.exports = (env) ->
   
     attributes:
       linearDistance:
+        label: "Linear Distance"
         description: "Linear distance between the devices."
         type: "number"
         unit: "m"
+        acronym: 'DIST'
       routeDistance:
+        label: "Route Distance"
         description: "Distance between the devices by road."
         type: "number"
         unit: "m"
+        acronym: 'ROAD'
       eta:
+        label: "ETA"
         description: "Estimated time of arrival."
         type: "number"
         unit: "s"
+        acronym: 'ETA'
       address:
+        label: "Address"
         description: "Current Address."
         type: "string"
+        acronym: 'ADRS'
         
     actions:
       updateLocation:
