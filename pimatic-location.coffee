@@ -47,7 +47,7 @@ module.exports = (env) ->
       @useMaps = config.useGoogleMaps
       @apiKey = config.googleMapsApiKey
 
-      attributes = {
+      @attributes = {
         linearDistance:
           label: "Linear Distance"
           description: "Linear distance between the devices."
@@ -57,21 +57,21 @@ module.exports = (env) ->
       }
 
       if @useMaps
-        attributes.routeDistance = {
+        @attributes.routeDistance = {
           label: "Route Distance"
           description: "Distance between the devices by road."
           type: "number"
           unit: "m"
           acronym: 'ROAD'
         }
-        attributes.eta = {
+        @attributes.eta = {
           label: "ETA"
           description: "Estimated time of arrival."
           type: "number"
           unit: "s"
           acronym: 'ETA'
         }
-        attributes.address = {
+        @attributes.address = {
           label: "Address"
           description: "Current Address."
           type: "string"
