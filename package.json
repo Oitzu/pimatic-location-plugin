@@ -8,7 +8,7 @@
     "pimatic-location-config-schema.coffee",
     "device-config-schema.coffee"
   ],
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/Oitzu/pimatic-location",
   "private": false,
   "repository": {
