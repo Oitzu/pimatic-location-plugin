@@ -18,7 +18,8 @@
   "configSchema": "pimatic-location-config-schema.coffee",
   "dependencies": {
     "googlemapsutil-https": "*",
-    "geolib": "*"
+    "geolib": "*",
+    "iphone-finder": "*"
   },
   "peerDependencies": {
     "pimatic": "0.8.*"

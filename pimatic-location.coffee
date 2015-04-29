@@ -7,6 +7,7 @@ module.exports = (env) ->
 
   gmaputil = require 'googlemapsutil-https'
   geolib = require 'geolib'
+  iPhoneFinder = require 'iphone-finder'
   
   # ###PimaticLocation class
   class PimaticLocation extends env.plugins.Plugin
@@ -46,6 +47,10 @@ module.exports = (env) ->
       @pimaticLong = config.long
       @useMaps = config.useGoogleMaps
       @apiKey = config.googleMapsApiKey
+      @iCloudUser = config.iCloudUser
+      @iCloudPass = config.iCloudPass
+      @iCloudDevice = config.iCloudDevice
+      @iCloudInterval = config.iCloudInterval
 
       @attributes = {
         linearDistance:
@@ -78,8 +83,27 @@ module.exports = (env) ->
           acronym: 'ADRS'
         }
 
-      super()
+      if @iCloudUser isnt "0" and @iCloudPass isnt "0" and @iCloudDevice isnt "0"
+        setInterval( ( =>
+          @findIPhone()
+        ), @iCloudInterval)
+        
 
+      super()
+    
+    processIDevice: (device) ->
+      if device.name is @iCloudDevice
+        updateLocation(device.location.longitude, device.location.latitude, 1)
+    
+    findIPhone: () ->
+      iPhoneFinder.findAllDevices(iCloudUser, iCloudPass, (err, devices) =>
+        if err
+          env.logger.error(err)
+        else
+          processIDevice device for device in devices
+      )
+    
+    
     getLinearDistance: -> Promise.resolve(@_linearDistance)
     getRouteDistance: -> Promise.resolve(@_routeDistance)
     getEta: -> Promise.resolve(@_eta)

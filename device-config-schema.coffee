@@ -20,5 +20,21 @@ module.exports = {
         description: "Google Maps Api Key"
         type: "string"
         default: "0"
+      iCloudUser:
+        description: "iCloud User"
+        type: "string"
+        default: "0"
+      iCloudPass:
+        description: "iCloud Password"
+        type: "string"
+        default: "0"
+      iCloudDevice:
+        description: "iCloud Device"
+        type: "string"
+        default: "0"
+      iCloudInterval:
+        description: "iCloud Interval"
+        type: "integer"
+        default: 6000
   }
 }
