@@ -92,7 +92,7 @@ module.exports = (env) ->
       super()
     
     processIDevice = (device) =>
-      env.logger.debug("Enumerate Device with name:"+ device.name)
+      env.logger.debug("Enumerate Device with name:"+ device.name + ". Searching for " + @iCloudDevice)
       if device.name is @iCloudDevice
         env.logger.debug("Matched Device with name:"+ device.name)
         updateLocation(device.location.longitude, device.location.latitude, 1)
