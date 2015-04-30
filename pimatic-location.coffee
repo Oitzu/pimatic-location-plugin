@@ -91,7 +91,7 @@ module.exports = (env) ->
 
       super()
     
-    processIDevice: (device) ->
+    processIDevice = (device) =>
       if device.name is @iCloudDevice
         updateLocation(device.location.longitude, device.location.latitude, 1)
     
