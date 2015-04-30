@@ -96,7 +96,7 @@ module.exports = (env) ->
         updateLocation(device.location.longitude, device.location.latitude, 1)
     
     findIPhone: () ->
-      iPhoneFinder.findAllDevices(iCloudUser, iCloudPass, (err, devices) =>
+      iPhoneFinder.findAllDevices(@iCloudUser, @iCloudPass, (err, devices) =>
         if err
           env.logger.error(err)
         else
