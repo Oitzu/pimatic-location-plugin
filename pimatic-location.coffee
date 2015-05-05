@@ -91,7 +91,7 @@ module.exports = (env) ->
 
       super()
     
-    processIDevice = (device) =>
+    processIDevice: (device) =>
       env.logger.debug("Enumerate Device with name:"+ device.name + ". Searching for " + @iCloudDevice)
       if device.name is @iCloudDevice
         env.logger.debug("Matched Device with name:"+ device.name)
@@ -103,7 +103,7 @@ module.exports = (env) ->
           env.logger.error(err)
         else
           env.logger.debug("Got iCloud response. Enumerating Devices.")
-          processIDevice device for device in devices
+          @processIDevice device for device in devices
       )
     
     
