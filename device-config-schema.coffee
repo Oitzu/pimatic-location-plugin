@@ -3,6 +3,7 @@ module.exports = {
   LocationDevice: {
     title: "LocationDevice config options"
     type: "object"
+    extensions: ["xAttributeOptions"]
     properties:
       lat:
         description: "Latitude of your home location"
