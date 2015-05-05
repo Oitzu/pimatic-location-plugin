@@ -35,6 +35,6 @@ module.exports = {
       iCloudInterval:
         description: "iCloud Interval"
         type: "integer"
-        default: 6000
+        default: 60000
   }
 }
