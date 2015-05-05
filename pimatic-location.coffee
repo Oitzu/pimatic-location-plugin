@@ -95,8 +95,11 @@ module.exports = (env) ->
       env.logger.debug("Enumerate Device with name:"+ device.name + ". Searching for " + @iCloudDevice)
       if device.name is @iCloudDevice
         env.logger.debug("Matched Device with name:"+ device.name)
-        updateLocation(device.location.longitude, device.location.latitude, 1)
-    
+        if device.location?
+          @updateLocation(device.location.longitude, device.location.latitude, 1)
+        else
+          env.logger.debug("Didn't get a valid location for Device "+device.name)
+
     findIPhone: () ->
       iPhoneFinder.findAllDevices(@iCloudUser, @iCloudPass, (err, devices) =>
         if err
