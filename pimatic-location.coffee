@@ -101,14 +101,16 @@ module.exports = (env) ->
           env.logger.debug("Didn't get a valid location for Device "+device.name)
 
     findIPhone: () ->
-      iPhoneFinder.findAllDevices(@iCloudUser, @iCloudPass, (err, devices) =>
-        if err
-          env.logger.error(err)
-        else
-          env.logger.debug("Got iCloud response. Enumerating Devices.")
-          @processIDevice device for device in devices
-      )
-    
+      try
+        iPhoneFinder.findAllDevices(@iCloudUser, @iCloudPass, (err, devices) =>
+          if err
+            env.logger.error(err)
+          else
+            env.logger.debug("Got iCloud response. Enumerating Devices.")
+            @processIDevice device for device in devices
+        )
+      catch error
+        env.logger.error("Couldn't connect to iCloud!")
     
     getLinearDistance: -> Promise.resolve(@_linearDistance)
     getRouteDistance: -> Promise.resolve(@_routeDistance)
