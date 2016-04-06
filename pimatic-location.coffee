@@ -41,16 +41,16 @@ module.exports = (env) ->
             type: "number"
         
     constructor: (@config) ->
-      @name = config.name
-      @id = config.id
-      @pimaticLat = config.lat
-      @pimaticLong = config.long
-      @useMaps = config.useGoogleMaps
-      @apiKey = config.googleMapsApiKey
-      @iCloudUser = config.iCloudUser
-      @iCloudPass = config.iCloudPass
-      @iCloudDevice = config.iCloudDevice
-      @iCloudInterval = config.iCloudInterval
+      @name = @config.name
+      @id = @config.id
+      @pimaticLat = @config.lat
+      @pimaticLong = @config.long
+      @useMaps = @config.useGoogleMaps
+      @apiKey = @config.googleMapsApiKey
+      @iCloudUser = @config.iCloudUser
+      @iCloudPass = @config.iCloudPass
+      @iCloudDevice = @config.iCloudDevice
+      @iCloudInterval = @config.iCloudInterval
 
       @attributes = {
         linearDistance:
