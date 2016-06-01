@@ -84,10 +84,10 @@ module.exports = (env) ->
         }
 
       if @iCloudUser isnt "0" and @iCloudPass isnt "0" and @iCloudDevice isnt "0"
+        @findIPhone()
         @intervalId = setInterval( ( =>
           @findIPhone()
         ), @iCloudInterval)
-        
 
       super()
 
