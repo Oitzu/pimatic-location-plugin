@@ -84,13 +84,17 @@ module.exports = (env) ->
         }
 
       if @iCloudUser isnt "0" and @iCloudPass isnt "0" and @iCloudDevice isnt "0"
-        setInterval( ( =>
+        @intervalId = setInterval( ( =>
           @findIPhone()
         ), @iCloudInterval)
         
 
       super()
-    
+
+    destroy: () ->
+      clearInterval @intervalId if @intervalId?
+      super()
+
     processIDevice: (device) =>
       env.logger.debug("Enumerate Device with name:"+ device.name + ". Searching for " + @iCloudDevice)
       if device.name is @iCloudDevice
