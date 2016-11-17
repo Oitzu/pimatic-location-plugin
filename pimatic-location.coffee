@@ -52,7 +52,41 @@ module.exports = (env) ->
       @iCloudDevice = @config.iCloudDevice
       @iCloudInterval = @config.iCloudInterval
 
+      @_lastError = "Success"
+
       @attributes = {
+        updateTimeStamp:
+          label: "Update timestamp"
+          description: "UTC Timestamp (seconds) of the last location update."
+          type: "number"
+          unit: "s"
+          acronym: 'UTC'
+          displaySparkline: false
+          hidden: true
+        updateTimeSpec:
+          label: "Update time spec"
+          description: "Date and time of the last location update."
+          type: "string"
+          unit: ""
+          acronym: 'DT'
+          displaySparkline: false
+          hidden: false
+        currentLat:
+          label: "Current latitude"
+          description: "Current latitude of the devices."
+          type: "number"
+          unit: "°"
+          acronym: 'LAT'
+          displaySparkline: false
+          hidden: true
+        currentLong:
+          label: "Current longitude"
+          description: "Current longitude of the devices."
+          type: "number"
+          unit: "°"
+          acronym: 'LONG'
+          displaySparkline: false
+          hidden: true
         linearDistance:
           label: "Linear Distance"
           description: "Linear distance between the devices."
@@ -83,6 +117,15 @@ module.exports = (env) ->
           acronym: 'ADRS'
         }
 
+      @attributes.lastError = {
+        label: "Last error"
+        description: "Description of last error."
+        type: "string"
+        acronym: 'ERR'
+        displaySparkline: false
+        hidden: true
+      }
+
       if @iCloudUser isnt "0" and @iCloudPass isnt "0" and @iCloudDevice isnt "0"
         @findIPhone()
         @intervalId = setInterval( ( =>
@@ -105,23 +148,35 @@ module.exports = (env) ->
           env.logger.debug("Didn't get a valid location for Device "+device.name)
 
     findIPhone: () ->
+      @_lastError = "Success"
       try
         iPhoneFinder.findAllDevices(@iCloudUser, @iCloudPass, (err, devices) =>
           if err
+            @_lastError = err.toString()
+            @emit 'lastError', @_lastError
             env.logger.error(err)
           else
             env.logger.debug("Got iCloud response. Enumerating Devices.")
             @processIDevice device for device in devices
         )
       catch error
-        env.logger.error("Couldn't connect to iCloud!")
+        env.logger.error(@iCloudUser + ": couldn't connect to iCloud!")
     
     getLinearDistance: -> Promise.resolve(@_linearDistance)
     getRouteDistance: -> Promise.resolve(@_routeDistance)
     getEta: -> Promise.resolve(@_eta)
     getAddress: -> Promise.resolve(@_address)
 
+    getUpdateTimeStamp: -> Promise.resolve(@_updateTimeStamp)
+    getUpdateTimeSpec: -> Promise.resolve(@_updateTimeSpec)
+    getCurrentLat: -> Promise.resolve(@_currentLat)
+    getCurrentLong: -> Promise.resolve(@_currentLong)
+
+    getLastError: -> Promise.resolve(@_lastError)
+
     updateLocation: (long, lat, updateAddress) ->
+      @_lastError = "Success"
+      timestamp = new Date()
       start_loc = {
         lat: lat
         lng: long
@@ -132,8 +187,20 @@ module.exports = (env) ->
       }
       
       env.logger.debug(
-        "Received: long=#{long} lat=#{lat} updateAddress=#{updateAddress} from #{@name}"
+        "Received: long=#{long} lat=#{lat} updateAddress=#{updateAddress} from #{@name} at #{timestamp}"
       )
+
+      @_updateTimeSpec = timestamp.format 'YYYY-MM-DD hh:mm:ss'
+      @emit 'updateTimeSpec', @_updateTimeSpec
+
+      @_updateTimeStamp = parseInt(timestamp.getTime()/1000, 10)
+      @emit 'updateTimeStamp', @_updateTimeStamp
+
+      @_currentLat = lat
+      @emit 'currentLat', @_currentLat
+
+      @_currentLong = long
+      @emit 'currentLong', @_currentLong
       
       linearDistance = geolib.getDistance(start_loc, end_loc)
      
@@ -151,6 +218,8 @@ module.exports = (env) ->
 
         updateLocationCB = (err, result) =>
           if err
+            @_lastError = err.toString()
+            @emit 'lastError', @_lastError
             env.logger.error(err)
           else
             try
@@ -171,11 +240,16 @@ module.exports = (env) ->
                 @_address = '-'
                 @emit 'address', @_address
             catch error
+              @_lastError = result
+              @emit 'lastError', @_lastError
               env.logger.error("Didn't received correct Gmaps-Api response!")
               env.logger.debug("Gmaps-Api response: "+result)
           return  
         
         gmaputil.directions(start_loc, end_loc, options, updateLocationCB, true, use_ssl)
+
+        # clear error message on success
+        @emit 'lastError', @_lastError
 
       return Promise.resolve()
     
