@@ -1,6 +1,16 @@
-{ "name": "pimatic-location",
+{
+  "name": "pimatic-location",
   "description": "Pimatic location plugin",
   "author": "Kevin Schreiber <blackoise@googlemail.com> (http://www.blackoise.de)",
+  "version": "0.2.4",
+  "license": "GPL-2.0",
+  "contributors": [
+    {
+      "name": "Marcus Wittig",
+      "url": "https://github.com/mwittig/edimax-smartplug"
+    }
+  ],
+  "homepage": "https://github.com/Oitzu/pimatic-location",
   "main": "pimatic-location.coffee",
   "files": [
     "pimatic-location.coffee",
@@ -8,8 +18,6 @@
     "pimatic-location-config-schema.coffee",
     "device-config-schema.coffee"
   ],
-  "version": "0.2.4",
-  "homepage": "https://github.com/Oitzu/pimatic-location",
   "private": false,
   "repository": {
     "type": "git",
