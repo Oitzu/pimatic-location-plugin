@@ -7,7 +7,7 @@ module.exports = (env) ->
 
   gmaputil = require 'googlemapsutil-https'
   geolib = require 'geolib'
-  iPhoneFinder = require 'iphone-finder'
+  iPhoneFinder = require('find-my-iphone').findmyphone
   
   # ###PimaticLocation class
   class PimaticLocation extends env.plugins.Plugin
@@ -84,10 +84,14 @@ module.exports = (env) ->
         }
 
       if @iCloudUser isnt "0" and @iCloudPass isnt "0" and @iCloudDevice isnt "0"
+        iPhoneFinder.apple_id = @iCloudUser
+        iPhoneFinder.password = @iCloudPass
         @findIPhone()
         @intervalId = setInterval( ( =>
           @findIPhone()
         ), @iCloudInterval)
+      else
+        env.logger.error "Invalid iCloud settings"
 
       super()
 
@@ -96,9 +100,9 @@ module.exports = (env) ->
       super()
 
     processIDevice: (device) =>
-      env.logger.debug("Enumerate Device with name:"+ device.name + ". Searching for " + @iCloudDevice)
+      env.logger.debug("Enumerate Device with name:" + device.name + ". Searching for " + @iCloudDevice)
       if device.name is @iCloudDevice
-        env.logger.debug("Matched Device with name:"+ device.name)
+        env.logger.debug("Matched Device with name:" + device.name)
         if device.location?
           @updateLocation(device.location.longitude, device.location.latitude, 1)
         else
@@ -106,7 +110,7 @@ module.exports = (env) ->
 
     findIPhone: () ->
       try
-        iPhoneFinder.findAllDevices(@iCloudUser, @iCloudPass, (err, devices) =>
+        iPhoneFinder.getDevices((err, devices) =>
           if err
             env.logger.error(err)
           else

@@ -25,9 +25,9 @@
   },
   "configSchema": "pimatic-location-config-schema.coffee",
   "dependencies": {
-    "googlemapsutil-https": "*",
+    "find-my-iphone": "^1.1.1",
     "geolib": "*",
-    "iphone-finder": "git+https://github.com/mwittig/node-iphone-finder.git#master"
+    "googlemapsutil-https": "*"
   },
   "peerDependencies": {
     "pimatic": ">=0.8.0 <1.0.0"
