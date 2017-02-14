@@ -2,7 +2,7 @@
   "name": "pimatic-location",
   "description": "Pimatic location plugin",
   "author": "Kevin Schreiber <blackoise@googlemail.com> (http://www.blackoise.de)",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "license": "GPL-2.0",
   "contributors": [
     {
