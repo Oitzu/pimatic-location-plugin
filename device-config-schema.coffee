@@ -8,11 +8,9 @@ module.exports = {
       lat:
         description: "Latitude of your home location"
         type: "number"
-        default: 0
       long:
         description: "Longitude of your home location"
         type: "number"
-        default: 0
       useGoogleMaps:
         description: "Use the Google Maps API to get Route Informations?"
         type: "boolean"
@@ -20,19 +18,19 @@ module.exports = {
       googleMapsApiKey:
         description: "Google Maps Api Key"
         type: "string"
-        default: "0"
+        default: ""
       iCloudUser:
         description: "iCloud User"
         type: "string"
-        default: "0"
+        default: ""
       iCloudPass:
         description: "iCloud Password"
         type: "string"
-        default: "0"
+        default: ""
       iCloudDevice:
         description: "iCloud Device"
         type: "string"
-        default: "0"
+        default: ""
       iCloudInterval:
         description: "iCloud Interval"
         type: "integer"
