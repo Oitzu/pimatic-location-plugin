@@ -83,15 +83,13 @@ module.exports = (env) ->
           acronym: 'ADRS'
         }
 
-      if @iCloudUser isnt "0" and @iCloudPass isnt "0" and @iCloudDevice isnt "0"
+      if @iCloudUser and @iCloudPass and @iCloudDevice
         iPhoneFinder.apple_id = @iCloudUser
         iPhoneFinder.password = @iCloudPass
         @findIPhone()
         @intervalId = setInterval( ( =>
           @findIPhone()
         ), @iCloudInterval)
-      else
-        env.logger.error "Invalid iCloud settings"
 
       super()
 
@@ -147,7 +145,7 @@ module.exports = (env) ->
       if @useMaps is true
         options = {}
         use_ssl = false
-        if @apiKey isnt "0"
+        if @apiKey
           use_ssl = true
           options = {
             key: @apiKey
